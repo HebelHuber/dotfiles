@@ -17,17 +17,11 @@ Then any file within the home folder can be versioned with normal commands like:
 
 ## cloning on a new machine
 
-    git clone --separate-git-dir=~/.dotfiles git@github.com:HebelHuber/dotfiles.git ~
-
-For posterity, note that this will fail if your home directory isn't empty.
-To get around that, clone the repo's working directory into a temporary directory first and then delete that directory,
-
     git clone --separate-git-dir=$HOME/.dotfiles git@github.com:HebelHuber/dotfiles.git $HOME/dotfiles-tmp
-    config config status.showUntrackedFiles no
+    git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME config status.showUntrackedFiles no
+    git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME reset --hard    
     rm -r ~/dotfiles-tmp/
-    alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-    config reset --hard
-    . ./bashrc
+    . ~/.bashrc
 
 To setup a new server with dockge, tailscale, cockpit and cloudflare tunnel,
-run `sudo ~/.dotfiles/virgin-server-setup/setup-virgin-server.sh`
+run `sudo ~/tools/virgin-server-setup/setup-virgin-server.sh`
