@@ -79,10 +79,10 @@ ufw enable
 ufw status verbose
 
 # Setup ssh server
-cp authorize_ssh.sh /usr/local/bin/authorize_ssh.sh
-chmod +x /usr/local/bin/authorize_ssh.sh
-rm -f /etc/ssh/sshd_config
-cp sshd_config /etc/ssh/sshd_config
+# cp authorize_ssh.sh /usr/local/bin/authorize_ssh.sh
+# chmod +x /usr/local/bin/authorize_ssh.sh
+# rm -f /etc/ssh/sshd_config
+cp /home/lukas/tools/virgin-server-setup/ssh/sshd_config /etc/ssh/sshd_config
 service ssh restart
 
 # Install cockpit with cockpit-navigator and cockpit-filesharing
@@ -106,6 +106,25 @@ EOL
 service cockpit start
 echo "Cockpit service status:"
 systemctl status cockpit --no-pager -l
+
+# install docker
+apt update
+apt install -y ca-certificates curl
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+chmod a+r /etc/apt/keyrings/docker.asc
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+  tee /etc/apt/sources.list.d/docker.list > /dev/null
+apt update
+
+apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+groupadd docker
+usermod -aG docker $(logname)
+newgrp docker
 
 # Setup dockge with tailscale and cloudflared
 mkdir -p /opt/stacks /opt/dockge
