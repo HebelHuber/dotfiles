@@ -30,3 +30,12 @@ To setup a new server with dockge, tailscale, cockpit and cloudflare tunnel, run
     git init --bare $HOME/.dotfiles
     alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
     config config status.showUntrackedFiles no
+
+
+## TODO
+
+- Automate cf tunnel and hostname creation. It is unclear to me how i can enable Access Rules for the hostnames
+    - https://www.mediarealm.com.au/articles/cloudflare-tunnel-setup-api/
+    - https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel-api/
+    - This would query the user for cf API token instead of tunnel token
+- Automate tailscale key creation, same as with cloudflare
