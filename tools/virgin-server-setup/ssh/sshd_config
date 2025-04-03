@@ -1,0 +1,39 @@
+
+Include /etc/ssh/sshd_config.d/*.conf
+
+Port 22
+
+# for disabling passwordAuth
+PasswordAuthentication yes
+ChallengeResponseAuthentication no
+
+# only non-root users can login with password
+
+# PermitRootLogin no
+# PermitRootLogin yes
+# PermitRootLogin without-password
+PermitRootLogin prohibit-password
+
+PermitTTY yes
+TCPKeepAlive yes
+PermitTunnel yes
+X11Forwarding yes
+AllowTcpForwarding yes
+
+# request a keep-alive answer every N seconds, up to K times
+# so after N*K Seconds, the tunnel will collapse
+ClientAliveInterval 30
+ClientAliveCountMax 10
+
+# Allow client to pass locale environment variables
+AcceptEnv LANG LC_*
+
+# enable sftp
+Subsystem sftp /usr/lib/openssh/sftp-server
+
+# enable key auth, and pull keys from github
+PubkeyAuthentication yes
+AuthorizedKeysFile /root/.ssh/authorized_keys
+AuthorizedKeysCommand /usr/bin/curl -sf https://github.com/HebelHuber.keys/
+# AuthorizedKeysCommand /usr/local/bin/authorize_ssh.sh
+AuthorizedKeysCommandUser nobody
