@@ -27,6 +27,7 @@ To get around that, clone the repo's working directory into a temporary director
     rm -r ~/dotfiles-tmp/
     alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
     config reset --hard
+    . ./bashrc
 
 To setup a new server with dockge, tailscale, cockpit and cloudflare tunnel,
 run `sudo ~/.dotfiles/virgin-server-setup/setup-virgin-server.sh`
