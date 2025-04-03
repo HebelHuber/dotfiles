@@ -39,3 +39,5 @@ To setup a new server with dockge, tailscale, cockpit and cloudflare tunnel, run
     - https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel-api/
     - This would query the user for cf API token instead of tunnel token
 - Automate tailscale key creation, same as with cloudflare
+    - use one-off keys for that
+    - https://tailscale.com/api#tag/keys/POST/tailnet/{tailnet}/keys
