@@ -35,10 +35,10 @@ To setup a new server with dockge, tailscale, cockpit and cloudflare tunnel, run
 ## TODO
 
 - Automate cf tunnel and hostname creation. It is unclear to me how i can enable Access Rules for the hostnames
-    - https://www.mediarealm.com.au/articles/cloudflare-tunnel-setup-api/
     - https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel-api/
     - This would query the user for cf API token instead of tunnel token
     - then i could create hostnames for cockpit and dockge automatically
+    - creating an api token [here](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/)
 - Automate tailscale key creation, same as with cloudflare
     - use one-off keys for that
     - https://tailscale.com/api#tag/keys/POST/tailnet/{tailnet}/keys
