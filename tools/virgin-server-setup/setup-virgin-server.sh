@@ -70,12 +70,12 @@ timedatectl set-timezone $TIMEZONE
 hostnamectl set-hostname $TAILSCALE_AND_MACHINE_HOSTNAME
 
 # Setup firewall
-ufw disable
-ufw reset
+ufw --force disable
+ufw --force reset
 ufw allow proto tcp to 0.0.0.0/0 port 22 comment 'allow SSH from anywhere'
 ufw allow in on tailscale0 comment 'allow incoming from tailnet'
 ufw allow from 192.168.178.0/24 comment 'allow everything from LAN'
-ufw enable
+ufw --force enable
 ufw status verbose
 
 # Setup ssh server
@@ -122,13 +122,13 @@ apt update
 
 apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-groupadd docker
+# groupadd docker
 usermod -aG docker $(logname)
-newgrp docker
+# newgrp docker
 
 # Setup dockge with tailscale and cloudflared
 mkdir -p /opt/stacks /opt/dockge
-cp ./dockge/compose.yaml /opt/dockge/compose.yaml
+cp /home/lukas/tools/virgin-server-setup/dockge/compose.yaml /opt/dockge/compose.yaml
 
 # Create .env file for dockge
 cat > /opt/dockge/.env << EOL
@@ -138,9 +138,13 @@ TAILSCALE_AND_MACHINE_HOSTNAME=${TAILSCALE_AND_MACHINE_HOSTNAME}
 CF_TUNNEL_PUBLIC_COCKPIT_DOMAIN=${CF_TUNNEL_PUBLIC_COCKPIT_DOMAIN}
 EOL
 
-pushd /opt/dockge
+chown -R $(logname) /opt/stacks
+chgrp -R $(logname) /opt/dockge
+
+CURRENT_DIR=$PWD
+cd /opt/dockge
 docker compose up -d
-popd
+cd $CURRENT_DIR
 
 # Print setup instructions
 echo ""
