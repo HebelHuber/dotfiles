@@ -41,3 +41,4 @@ To setup a new server with dockge, tailscale, cockpit and cloudflare tunnel, run
 - Automate tailscale key creation, same as with cloudflare
     - use one-off keys for that
     - https://tailscale.com/api#tag/keys/POST/tailnet/{tailnet}/keys
+    - https://tailscale.com/api#tag/devices/POST/device/{deviceId}/name
