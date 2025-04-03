@@ -38,7 +38,9 @@ To setup a new server with dockge, tailscale, cockpit and cloudflare tunnel, run
     - https://www.mediarealm.com.au/articles/cloudflare-tunnel-setup-api/
     - https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel-api/
     - This would query the user for cf API token instead of tunnel token
+    - then i could create hostnames for cockpit and dockge automatically
 - Automate tailscale key creation, same as with cloudflare
     - use one-off keys for that
     - https://tailscale.com/api#tag/keys/POST/tailnet/{tailnet}/keys
     - https://tailscale.com/api#tag/devices/POST/device/{deviceId}/name
+- preconfigure dockge auth settings (disabled?)
