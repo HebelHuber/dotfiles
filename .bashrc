@@ -126,10 +126,6 @@ function parse_git_branch() {
     fi
 }
 
-## usage:
-##   multiline_prompt
-## or
-##   multiline_prompt kali
 function multiline_prompt() {
     GREEN='\[\033[01;32m\]'
     BLUE='\[\033[01;34m\]'
@@ -139,7 +135,7 @@ function multiline_prompt() {
 
      export PS1="┌──$MODLINE
 └─\$ "
-  
+
     unset color_prompt force_color_prompt
     title_bar
 }
