@@ -1,8 +1,9 @@
 # some more ls aliases
 
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
+alias ls='lsd -alF'
+alias lt='lsd -alF --tree'
+#alias la='ls -A'
+#alias l='ls -CF'
 
 alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias nano='micro'
@@ -17,4 +18,5 @@ alias edit='micro $(fzf)'
 alias ..='cd ..'
 alias ...='cd ../..'
 
-eval $(thefuck --alias fuck)
+
+
