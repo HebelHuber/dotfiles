@@ -1,0 +1,11 @@
+set tabsize 4
+set tabstospaces
+set mouse
+set whitespace ". "
+set constantshow
+set linenumbers
+
+include "/usr/share/nano/c.nanorc"
+include "/usr/share/nano/html.nanorc"
+include "/usr/share/nano/python.nanorc"
+include "/usr/share/nano/sh.nanorc"
