@@ -175,3 +175,5 @@ function server() {
 }
 
 multiline_prompt
+
+. ~/.hstrc
