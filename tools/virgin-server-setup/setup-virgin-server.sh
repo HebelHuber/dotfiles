@@ -31,6 +31,10 @@ if [ -f ./default_packages ]; then
     xargs -a ./default_packages apt install -y
 fi
 
+# install micro plugins
+micro -plugin install filemanager
+micro -plugin install jump
+
 # Cloudflare Tunnel Token
 echo "1. ${MAGENTA}Cloudflare Tunnel Token${RESET} - create one at: https://dash.cloudflare.com/ - Go to: Zero Trust > Access > Tunnels > Create Tunnel"
 read -p "${YELLOW}Enter Cloudflare Tunnel Token: ${RESET}" CLOUDFLARE_TUNNEL_TOKEN

@@ -1,0 +1,16 @@
+{
+    "diffgutter": true,
+    "filemanager": {
+        "openonstart": true
+    },
+    "filemanager-openonstart": true,
+    "hltaberrors": true,
+    "hltrailingws": true,
+    "indentchar": "•",
+    "keymenu": true,
+    "savecursor": true,
+    "saveundo": true,
+    "scrollbar": true,
+    "tabmovement": true,
+    "tabstospaces": true
+}
