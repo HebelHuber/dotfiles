@@ -112,7 +112,8 @@ if ! shopt -oq posix; then
 fi
 
 doc () {
-    curl "https://cheat.sh/$1" 2>/dev/null | less
+#    curl "https://cheat.sh/$1" 2>/dev/null | less
+    curl "https://cheat.sh/$1" 2>/dev/null | batcat
 }
 
 # get current branch in git repo

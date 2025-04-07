@@ -1,7 +1,7 @@
 # some more ls aliases
 
-alias ls='lsd -alF'
-alias lt='lsd -alF --tree'
+alias ls='lsd -alF --icon never --date +"%d.%m.%y %H:%M:%S"'
+alias lt='lsd -alF --icon never --date +"%d.%m.%y %H:%M:%S" --tree'
 #alias la='ls -A'
 #alias l='ls -CF'
 
