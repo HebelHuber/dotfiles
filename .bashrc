@@ -174,4 +174,11 @@ multiline_prompt
 
 . ~/.hstrc
 
-neofetch
+# Check terminal width and set variables/aliases/behavior accordingly
+if [ $(tput cols) -lt 60 ]; then
+    # Actions for narrow terminals (<60 columns)
+    neofetch --backend off
+else
+    # Actions for wider terminals (≥60 columns)
+    neofetch
+fi
