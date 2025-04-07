@@ -110,3 +110,68 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+doc () {
+    curl "https://cheat.sh/$1" 2>/dev/null | less
+}
+
+# get current branch in git repo
+function parse_git_branch() {
+    BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+    if [ "${BRANCH}" == "" ]
+    then
+        echo ""
+    else
+        echo " (${BRANCH})"
+    fi
+}
+
+## usage:
+##   multiline_prompt
+## or
+##   multiline_prompt kali
+function multiline_prompt() {
+    GREEN='\[\033[01;32m\]'
+    BLUE='\[\033[01;34m\]'
+    ORANGE='\[\033[38;5;202m\]'
+    RESET='\[\033[00m\]'
+    MODLINE="(${GREEN}\u@\h${RESET})-[${BLUE}\w${RESET}]${ORANGE}\`parse_git_branch\`${RESET}"
+
+     export PS1="┌──$MODLINE
+└─\$ "
+  
+    unset color_prompt force_color_prompt
+    title_bar
+}
+
+function singleline_prompt() {
+    if [ "$color_prompt" = yes ]; then
+         PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:[\[\033[01;34m\]\w\[\033[00m\]]\[\033[38;5;202m\]\`parse_git_branch\`\[\033[m\]$ "
+    else
+        PS1="\u@\h:\w\$ "
+    fi
+    unset color_prompt force_color_prompt
+    title_bar
+}
+
+function title_bar() {
+    # If this is an xterm set the title to user@host:dir
+    case "$TERM" in
+    xterm*|rxvt*)
+        PS1="\[\e]0;\w\a\]$PS1"
+        ;;
+    *)
+        ;;
+    esac
+}
+
+function server() {
+    VERSION=$(python --version | grep -o " 3\.")
+    if [ $VERSION = " 3."]; then
+        python3 -m http.server
+    else
+        python -m http.server
+    fi
+}
+
+multiline_prompt

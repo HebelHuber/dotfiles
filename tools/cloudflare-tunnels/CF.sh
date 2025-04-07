@@ -1,5 +1,17 @@
 #!/bin/sh
 
+BLACK=`tput setaf 0`
+RED=`tput setaf 1`
+GREEN=`tput setaf 2`
+YELLOW=`tput setaf 3`
+BLUE=`tput setaf 4`
+MAGENTA=`tput setaf 5`
+CYAN=`tput setaf 6`
+WHITE=`tput setaf 7`
+BOLD=`tput bold`
+RESET=`tput sgr0`
+# echo "hello ${RED}some red text${RESET} world"
+
 function create_tunnel {
     TUNNEL_NAME="$1"
 
@@ -22,31 +34,91 @@ function connect_app {
     NEW_TUNNEL_HOSTNAME="$1"
     NEW_TUNNEL_LOCAL_URL="$2"
 
-    CONNECTION_APP_RESULT=$(curl --request PUT "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/cfd_tunnel/${TUNNEL_ID}/configurations" \
+    # get current tunnel configurations
+
+    CURRENT_RESULT=$(curl "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/cfd_tunnel/${TUNNEL_ID}/configurations" \
+        --header 'Content-Type: application/json' \
+        --header "Authorization: Bearer $CLOUDFLARE_API_TOKEN" )
+
+    #echo "${RED} CURRENT_RESULT ${RESET}"
+    #echo "$CURRENT_RESULT" | jq '.'    
+
+    # Add new app to config
+
+    CONFIG_SECTION=$(echo "$CURRENT_RESULT" | jq '.result.config.ingress')
+    
+    PUBLIC_HOSTNAMES=$(echo "$CONFIG_SECTION" | jq ". = (.[:-1] + [{
+                    \"hostname\": \"${NEW_TUNNEL_HOSTNAME}\",
+                    \"service\": \"${NEW_TUNNEL_LOCAL_URL}\",
+                    \"originRequest\": {
+                        \"access\": {
+                            \"audTag\": [\"${CLOUDFLARE_AUD_TAG}\"],
+                            \"required\": true,
+                            \"teamName\": \"${CLOUDFLARE_TEAM_NAME}\"
+                        }
+                    }
+                  }] + .[-1:])")
+
+    # echo "${RED} NEW_CONFIG ${RESET}"
+    # echo "$NEW_CONFIG" | jq '.'
+
+    NEW_CONFIG=$(jq -n "{config: {ingress: $PUBLIC_HOSTNAMES}}")
+
+    # connect app
+
+    CONNECTION_APP_RESULT=$(curl \
+        --request PUT "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/cfd_tunnel/${TUNNEL_ID}/configurations" \
+        --header 'Content-Type: application/json' \
+        --header "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+        --data $(echo "$NEW_CONFIG" | jq -r '.|tojson') )
+
+
+  # CONNECTION_APP_RESULT=$(curl --request PUT "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/cfd_tunnel/${TUNNEL_ID}/configurations" \
+  #      --header 'Content-Type: application/json' \
+  #      --header "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+  #      --data "{
+  #            \"config\": {
+  #              \"ingress\": [
+  #                {
+  #                  \"hostname\": \"${NEW_TUNNEL_HOSTNAME}\",
+  #                  \"service\": \"${NEW_TUNNEL_LOCAL_URL}\",
+  #                  \"originRequest\": {
+  #                      \"access\": {
+  #                          \"audTag\": [\"69b1a03f0782ea89fb7e57fc64bca18903c57be96bdeeb8eeb4a7348f4e6f4d8\"],
+  #                          \"required\": true,
+  #                          \"teamName\": \"kiefercloud\"
+  #                      }
+  #                  }
+  #                },
+  #                {
+  #                  \"service\": \"http_status:404\"
+  #                }
+  #            ]
+  #        }
+  # }")
+
+    echo "$CONNECTION_APP_RESULT" | jq '.'
+
+    # create DNS entry
+
+    ADD_DNS_RESULT=$(curl "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}/dns_records" \
         --header 'Content-Type: application/json' \
         --header "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
         --data "{
-              \"config\": {
-                \"ingress\": [
-                  {
-                    \"hostname\": \"${NEW_TUNNEL_HOSTNAME}\",
-                    \"service\": \"${NEW_TUNNEL_LOCAL_URL}\",
-                    \"originRequest\": {}
-                  },
-                  {
-                    \"service\": \"http_status:404\"
-                  }
-              ]
-          }
-    }")
+            \"type\": \"CNAME\",
+            \"proxied\": true,
+            \"name\": \"${NEW_TUNNEL_HOSTNAME}\",
+            \"content\": \"${TUNNEL_ID}.cfargotunnel.com\"
+        }")
 
-    echo "$CONNECTION_APP_RESULT" | jq '.'
+    echo "$ADD_DNS_RESULT" | jq '.'
 }
 
 # load credentials from .env
 # CLOUDFLARE_ACCOUNT_ID
 # CLOUDFLARE_API_TOKEN
 # CLOUDFLARE_ZONE_ID
+# CLOUDFLARE_ACCESS_APPLICATION_ID
 
 . .env
 
