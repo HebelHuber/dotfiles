@@ -117,59 +117,57 @@ doc () {
 }
 
 # get current branch in git repo
-function parse_git_branch() {
+function parse_git() {
     BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
     if [ "${BRANCH}" == "" ]
     then
         echo ""
     else
-        echo " (${BRANCH})"
+        GIT_PS1_SHOWDIRTYSTATE=1
+        GIT_PS1_SHOWSTASHSTATE=1
+        GIT_PS1_SHOWUNTRACKEDFILES=1
+        GIT_PS1_SHOWUPSTREAM=="auto"
+        GIT_PS1_STATESEPARATOR="─"
+        REPO_NAME=$(basename `git rev-parse --show-toplevel`)
+        echo "[${REPO_NAME}:${BRANCH} $(__git_ps1 "(%s)")]"
     fi
 }
 
 function multiline_prompt() {
-    GREEN='\[\033[01;32m\]'
-    BLUE='\[\033[01;34m\]'
-    ORANGE='\[\033[38;5;202m\]'
-    RESET='\[\033[00m\]'
-    MODLINE="(${GREEN}\u@\h${RESET})-[${BLUE}\w${RESET}]${ORANGE}\`parse_git_branch\`${RESET}"
 
-     export PS1="┌──$MODLINE
-└─\$ "
+    # Text Colors
+    GREEN=$(tput setaf 2)      # Green text
+    BLUE=$(tput setaf 4)        # Blue text
+    ORANGE=$(tput setaf 208)    # Orange text (works in terminals that support 256 colors)
+
+    # Background Colors
+    LIGHT_BLUE_BG=$(tput setab 12)  # Light blue background (works in most terminals)
+
+    BOLD=$(tput bold)
+    RESET=$(tput sgr0)          # Reset all formatting
+
+    SUCCESS=✅
+    ERROR=❌
+    ERROR_CODE_CHUNK="\$(if [ \$? == 0 ]; then echo $SUCCESS; else echo $ERROR; fi) "
+
+    USERNAME="${BOLD}${GREEN}\u"
+    HOSTNAME="${BOLD}${GREEN}\h"
+    USER_AT_HOST="(${USERNAME}${RESET}@${HOSTNAME}${RESET})"
+    CURRENT_DIR="[${BOLD}${BLUE}\w${RESET}]"
+    TIME_SEGMENT="${ORANGE}\D{%T}${RESET}"
+
+    GIT_PS1_SHOWDIRTYSTATE=1
+    GIT_PS1_SHOWUNTRACKEDFILES=1
+    GIT_PS1_SHOWCONFLICTSTATE="yes"
+    GIT_PS1_SHOWCOLORHINTS=1
+    GIT_SEGMENT="$(__git_ps1 "(%s)")"    
+
+    export PS1="╭─$USER_AT_HOST─$CURRENT_DIR─$GIT_SEGMENT─$TIME_SEGMENT─$ERROR_CODE_CHUNK\n╰─\$ "
 
     unset color_prompt force_color_prompt
-    title_bar
 }
 
-function singleline_prompt() {
-    if [ "$color_prompt" = yes ]; then
-         PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:[\[\033[01;34m\]\w\[\033[00m\]]\[\033[38;5;202m\]\`parse_git_branch\`\[\033[m\]$ "
-    else
-        PS1="\u@\h:\w\$ "
-    fi
-    unset color_prompt force_color_prompt
-    title_bar
-}
-
-function title_bar() {
-    # If this is an xterm set the title to user@host:dir
-    case "$TERM" in
-    xterm*|rxvt*)
-        PS1="\[\e]0;\w\a\]$PS1"
-        ;;
-    *)
-        ;;
-    esac
-}
-
-function server() {
-    VERSION=$(python --version | grep -o " 3\.")
-    if [ $VERSION = " 3."]; then
-        python3 -m http.server
-    else
-        python -m http.server
-    fi
-}
+. ~/tools/git-prompt.sh
 
 multiline_prompt
 
@@ -179,7 +177,10 @@ multiline_prompt
 if [ $(tput cols) -lt 60 ]; then
     # Actions for narrow terminals (<60 columns)
     neofetch --backend off
+elif [ $(tput cols) -lt 100 ]; then
+    # Actions for wider terminals (≥100 columns)
+    neofetch --ascii_distro Ubuntu_small
 else
-    # Actions for wider terminals (≥60 columns)
+    # largest width
     neofetch
 fi
