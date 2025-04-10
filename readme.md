@@ -1,5 +1,3 @@
-# Yolo
-
 cloning on a new machine
 
     ssh-keygen -t rsa
